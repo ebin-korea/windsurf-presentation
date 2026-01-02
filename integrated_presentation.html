@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EBIN Integrated Presentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --frame-width: 1280px;
+            --frame-height: 720px;
+            --gold: #D4AF37;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 40px 0 100px;
+            min-height: 100vh;
+            overflow-x: auto;
+            overflow-y: auto;
+        }
+
+        .presentation-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .presentation-shell {
+            width: var(--frame-width);
+            min-width: var(--frame-width);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .presentation-container {
+            width: var(--frame-width);
+            min-width: var(--frame-width);
+            min-height: var(--frame-height);
+            background-color: #000;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+            position: relative;
+            padding: 0;
+        }
+
+        #slides-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .page-indicator {
+            position: absolute;
+            top: -32px;
+            left: 0;
+            font-size: 14px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+            z-index: 10;
+        }
+
+        .control-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+            transform: none;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+                padding: 0;
+            }
+
+            .presentation-wrapper,
+            .presentation-shell,
+            .presentation-container,
+            #slides-container {
+                width: 100% !important;
+                min-width: 0 !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                background: #fff !important;
+            }
+
+            .slide {
+                display: block !important;
+                opacity: 1 !important;
+                width: 100% !important;
+                min-height: 0 !important;
+                padding: 0 !important;
+                page-break-after: always;
+                background: #000 !important;
+            }
+
+            .page-indicator,
+            .controls {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-wrapper">
+        <div class="presentation-shell">
+            <div class="page-indicator">
+                <span id="current-slide">1</span> / <span id="total-slides">9</span>
+            </div>
+            <div class="presentation-container">
+                <div id="slides-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prev-slide" class="control-btn" title="이전 슬라이드 (←)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button id="next-slide" class="control-btn" title="다음 슬라이드 (→)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <button id="export-pdf" class="control-btn" title="PDF로 내보내기">
+            <i class="fas fa-file-pdf"></i>
+        </button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 9; // 1-9.html
+
+        const prevBtn = document.getElementById('prev-slide');
+        const nextBtn = document.getElementById('next-slide');
+        const parser = new DOMParser();
+        const pdfBtn = document.getElementById('export-pdf');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('slides-container');
+
+            for (let i = 1; i <= totalSlides; i++) {
+                try {
+                    const response = await fetch(`${i}.html`);
+                    const html = await response.text();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    appendSlideStyles(doc, i);
+
+                    const slide = document.createElement('div');
+                    slide.className = `slide ${i === 1 ? 'active' : ''}`;
+                    slide.id = `slide-${i}`;
+                    slide.innerHTML = doc.body ? doc.body.innerHTML : html;
+
+                    container.appendChild(slide);
+                    executeSlideScripts(doc, i, slide);
+                } catch (error) {
+                    console.error(`Error loading slide ${i}:`, error);
+                }
+            }
+
+            updateSlideIndicator();
+            updateNavState();
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                    nextSlide();
+                }
+            });
+
+            prevBtn.addEventListener('click', prevSlide);
+            nextBtn.addEventListener('click', nextSlide);
+            pdfBtn.addEventListener('click', exportToPDF);
+        });
+
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.slide');
+            if (index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+                updateSlideIndicator();
+                updateNavState();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function nextSlide() {
+            showSlide(Math.min(currentSlide + 1, totalSlides - 1));
+        }
+
+        function prevSlide() {
+            showSlide(Math.max(currentSlide - 1, 0));
+        }
+
+        function updateSlideIndicator() {
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            document.getElementById('total-slides').textContent = totalSlides;
+        }
+
+        function updateNavState() {
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        async function exportToPDF() {
+            const slides = document.querySelectorAll('.slide');
+            if (!slides.length || !window.jspdf) return;
+
+            const { jsPDF } = window.jspdf;
+            const staging = document.createElement('div');
+            staging.style.position = 'fixed';
+            staging.style.left = '-2000px';
+            staging.style.top = '0';
+            staging.style.background = '#000';
+            staging.style.width = '1280px';
+            document.body.appendChild(staging);
+
+            let pdf = null;
+
+            for (let i = 0; i < slides.length; i++) {
+                const clone = slides[i].cloneNode(true);
+                clone.style.display = 'block';
+                clone.style.opacity = '1';
+                clone.style.width = '1280px';
+                clone.style.margin = '0';
+                clone.style.padding = '0';
+                staging.innerHTML = '';
+                staging.appendChild(clone);
+
+                const canvas = await html2canvas(clone, {
+                    backgroundColor: '#000',
+                    scale: 2,
+                    useCORS: true,
+                    windowWidth: clone.scrollWidth,
+                    windowHeight: clone.scrollHeight
+                });
+
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const imgData = canvas.toDataURL('image/png');
+
+                if (!pdf) {
+                    pdf = new jsPDF({
+                        orientation: imgWidth >= imgHeight ? 'landscape' : 'portrait',
+                        unit: 'px',
+                        format: [imgWidth, imgHeight]
+                    });
+                } else {
+                    pdf.addPage([imgWidth, imgHeight], imgWidth >= imgHeight ? 'landscape' : 'portrait');
+                }
+
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            }
+
+            document.body.removeChild(staging);
+            if (pdf) {
+                pdf.save('ebin-presentation.pdf');
+            }
+        }
+
+        function appendSlideStyles(doc, slideIndex) {
+            if (!doc || !doc.head) return;
+            const styles = doc.head.querySelectorAll('style');
+            styles.forEach((styleEl, styleIdx) => {
+                const marker = `slide-style-${slideIndex}-${styleIdx}`;
+                if (!document.head.querySelector(`style[data-slide-style="${marker}"]`)) {
+                    const injected = document.createElement('style');
+                    injected.dataset.slideStyle = marker;
+                    injected.textContent = styleEl.textContent;
+                    document.head.appendChild(injected);
+                }
+            });
+        }
+
+        function executeSlideScripts(doc, slideIndex, slideRoot) {
+            const scripts = doc.querySelectorAll('script');
+            scripts.forEach((scriptEl, scriptIdx) => {
+                const newScript = document.createElement('script');
+
+                if (scriptEl.src) {
+                    if (scriptEl.src.includes('chart.js')) {
+                        return;
+                    }
+                    if (document.querySelector(`script[data-slide-script-src="${scriptEl.src}"]`)) {
+                        return;
+                    }
+                    newScript.src = scriptEl.src;
+                    newScript.dataset.slideScriptSrc = scriptEl.src;
+                    document.body.appendChild(newScript);
+                } else {
+                    newScript.textContent = scriptEl.textContent;
+                    newScript.dataset.slideScript = `slide-${slideIndex}-${scriptIdx}`;
+                    (slideRoot || document.body).appendChild(newScript);
+                    // Allow execution then clean up to avoid duplicate nodes
+                    setTimeout(() => newScript.remove(), 0);
+                }
+            });
+        }
+
+        // Handle swipe events for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) { // Minimum swipe distance
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

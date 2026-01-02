@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EBIN Task 2 Expected Effects</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        .gold-text {
+            color: #D4AF37;
+        }
+        .gold-border {
+            border-color: #D4AF37;
+        }
+        .gold-bg {
+            background-color: #D4AF37;
+        }
+        .card-bg {
+            background-color: #1A1A1A;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            background-color: #222222;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-bottom: 4px solid #D4AF37;
+        }
+        .icon-circle {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover .icon-circle {
+            background-color: #D4AF37;
+            border-color: #D4AF37;
+        }
+        .card-hover:hover .icon-inner {
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+<div class="w-[1280px] h-[720px] flex flex-col p-10 bg-black overflow-hidden relative">
+<!-- Header Section -->
+<div class="flex flex-col mb-10 border-b border-gray-800 pb-4">
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<p class="text-2xl font-black tracking-[0.2em] gold-text mb-2">EBIN</p>
+<div class="flex items-center gap-3">
+<span class="bg-[#2C2C2C] text-white text-xs font-bold px-2 py-1 rounded border border-gray-600">과제 2</span>
+<h1 class="text-3xl font-bold leading-tight text-white">
+                            재무 성과에 대한 <span class="gold-text">책임 의식</span>이 조직 전반으로 확산
+                        </h1>
+</div>
+</div>
+<div class="text-right">
+<p class="text-gray-500 text-sm font-light uppercase tracking-widest">Expected Effects</p>
+<p class="text-gray-400 text-xs mt-1">Cultural &amp; Financial Impact</p>
+</div>
+</div>
+</div>
+<!-- Main Content: 3 Horizontal Cards -->
+<div class="flex-1 grid grid-cols-3 gap-8 pb-4">
+<!-- Card 1: 보상 명확화 -->
+<div class="card-bg rounded-lg p-8 flex flex-col justify-between card-hover border-t border-gray-800 relative group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gray-800 group-hover:bg-[#D4AF37] transition-colors duration-300"></div>
+<div>
+<div class="mb-6 flex justify-between items-start">
+<div class="w-16 h-16 rounded-full border border-gray-600 flex items-center justify-center icon-circle bg-[#0A0A0A]">
+<i class="fas fa-trophy text-2xl text-gray-400 icon-inner group-hover:text-black transition-colors"></i>
+</div>
+<span class="text-5xl font-black text-[#222] group-hover:text-[#333] transition-colors">01</span>
+</div>
+<h3 class="text-2xl font-bold text-white mb-2 group-hover:text-[#D4AF37] transition-colors">목표 달성 → 보상 명확화</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        재무 성과와 연동된 투명한 보상 체계로<br/>
+                        고성과자의 동기 부여를 극대화하고<br/>
+                        성과 중심의 조직 문화를 정착시킴
+                    </p>
+</div>
+<div class="mt-auto pt-6 border-t border-gray-800 group-hover:border-gray-700">
+<p class="text-xs text-gray-500 uppercase font-bold mb-1">Max Incentive</p>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-bold text-white">200</span>
+<span class="text-xl font-medium text-[#D4AF37] mb-1">만원</span>
+<span class="text-xs text-gray-500 mb-1.5 ml-auto">(차등 지급 폭 확대)</span>
+</div>
+<div class="w-full bg-gray-800 h-1.5 mt-3 rounded-full overflow-hidden">
+<div class="bg-[#D4AF37] h-full w-3/4"></div>
+</div>
+</div>
+</div>
+<!-- Card 2: 의사결정 질 향상 -->
+<div class="card-bg rounded-lg p-8 flex flex-col justify-between card-hover border-t border-gray-800 relative group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gray-800 group-hover:bg-[#D4AF37] transition-colors duration-300"></div>
+<div>
+<div class="mb-6 flex justify-between items-start">
+<div class="w-16 h-16 rounded-full border border-gray-600 flex items-center justify-center icon-circle bg-[#0A0A0A]">
+<i class="fas fa-chess-queen text-2xl text-gray-400 icon-inner group-hover:text-black transition-colors"></i>
+</div>
+<span class="text-5xl font-black text-[#222] group-hover:text-[#333] transition-colors">02</span>
+</div>
+<h3 class="text-2xl font-bold text-white mb-2 group-hover:text-[#D4AF37] transition-colors">비용 의사결정의 질 향상</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        '내 돈 처럼 쓴다'는 주인 의식 함양으로<br/>
+                        불필요한 비용 누수를 차단하고<br/>
+                        투자 대비 효율(ROI) 중심의 의사결정
+                    </p>
+</div>
+<div class="mt-auto pt-6 border-t border-gray-800 group-hover:border-gray-700">
+<p class="text-xs text-gray-500 uppercase font-bold mb-1">Target Budget Compliance</p>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-bold text-white">95</span>
+<span class="text-xl font-medium text-[#D4AF37] mb-1">%</span>
+<span class="text-xs text-gray-500 mb-1.5 ml-auto">(예산 준수율 제고)</span>
+</div>
+<div class="w-full bg-gray-800 h-1.5 mt-3 rounded-full overflow-hidden">
+<div class="bg-[#D4AF37] h-full w-[98%]"></div>
+</div>
+</div>
+</div>
+<!-- Card 3: 조직 간 협업 강화 -->
+<div class="card-bg rounded-lg p-8 flex flex-col justify-between card-hover border-t border-gray-800 relative group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gray-800 group-hover:bg-[#D4AF37] transition-colors duration-300"></div>
+<div>
+<div class="mb-6 flex justify-between items-start">
+<div class="w-16 h-16 rounded-full border border-gray-600 flex items-center justify-center icon-circle bg-[#0A0A0A]">
+<i class="fas fa-handshake text-2xl text-gray-400 icon-inner group-hover:text-black transition-colors"></i>
+</div>
+<span class="text-5xl font-black text-[#222] group-hover:text-[#333] transition-colors">03</span>
+</div>
+<h3 class="text-2xl font-bold text-white mb-2 group-hover:text-[#D4AF37] transition-colors">조직 간 협업 강화</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        공동 재무 목표(전사 이익) 도입으로<br/>
+                        부서 간 이기주의(Silo)를 타파하고<br/>
+                        유기적인 협업 체계 구축
+                    </p>
+</div>
+<div class="mt-auto pt-6 border-t border-gray-800 group-hover:border-gray-700">
+<p class="text-xs text-gray-500 uppercase font-bold mb-1">성과평가내 상호평가로</p>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-bold text-white">부서</span>
+<span class="text-xl font-medium text-[#D4AF37] mb-1"> / 팀원간 </span>
+<span class="text-xs text-gray-500 mb-1.5 ml-auto">(부서, 팀원의 이기주의 타파)</span>
+</div>
+<div class="w-full bg-gray-800 h-1.5 mt-3 rounded-full overflow-hidden">
+<div class="bg-[#D4AF37] h-full w-[90%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-6 flex justify-between items-center border-t border-gray-900 pt-3">
+<p class="text-[10px] text-gray-600">Confidential - For Internal Use Only</p>
+<div class="flex space-x-2">
+<div class="w-2 h-2 rounded-full bg-gray-700"></div>
+<div class="w-2 h-2 rounded-full bg-gray-700"></div>
+<div class="w-2 h-2 rounded-full bg-gray-700"></div>
+<div class="w-2 h-2 rounded-full bg-gray-700"></div>
+<div class="w-2 h-2 rounded-full bg-gray-700"></div>
+<div class="w-2 h-2 rounded-full bg-[#D4AF37]"></div>
+</div>
+<p class="text-[10px] text-gray-600">Page 06</p>
+</div>
+</div>
+</body>
+</html>
