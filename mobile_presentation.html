@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EBIN Mobile Presentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --frame-width: 1280px;
+            --frame-height: 720px;
+            --gold: #D4AF37;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-shell {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(180deg, #050505, #0d0d0d);
+        }
+
+        .presentation-shell {
+            width: var(--frame-width);
+            height: var(--frame-height);
+            transform-origin: top left;
+        }
+
+        .slide-viewport {
+            width: var(--frame-width);
+            height: var(--frame-height);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+            background-color: #000;
+            position: relative;
+        }
+
+        #slides-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+            z-index: 20;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .page-indicator {
+            position: absolute;
+            top: 16px;
+            left: 24px;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 20;
+        }
+
+        .desktop-link {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--gold);
+            font-size: 12px;
+            text-decoration: none;
+            z-index: 20;
+        }
+
+        .portrait-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            color: #fff;
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .portrait-warning i {
+            font-size: 48px;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+
+        @media screen and (orientation: portrait) {
+            .app-shell {
+                display: none;
+            }
+
+            .portrait-warning {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="portrait-warning">
+        <div>
+            <i class="fas fa-phone fa-rotate-90"></i>
+            <p class="mt-4 text-lg font-semibold">가로 화면으로 돌려주세요</p>
+            <p class="text-sm text-gray-400 mt-2">이 프레젠테이션은 가로 모드에서 최적화되어 있습니다.</p>
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <div class="presentation-shell" id="presentation-shell">
+            <div class="slide-viewport">
+                <div class="page-indicator"><span id="current-slide">1</span> / <span id="total-slides">9</span></div>
+                <a class="desktop-link" href="integrated_presentation.html">데스크톱 버전</a>
+                <div id="slides-container"></div>
+                <div class="controls">
+                    <button id="prev-slide" class="control-btn" title="이전">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="next-slide" class="control-btn" title="다음">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FRAME_WIDTH = 1280;
+        const FRAME_HEIGHT = 720;
+        let currentSlide = 0;
+        const totalSlides = 9;
+        const parser = new DOMParser();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('slides-container');
+
+            for (let i = 1; i <= totalSlides; i++) {
+                try {
+                    const response = await fetch(`${i}.html`);
+                    const html = await response.text();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    appendSlideStyles(doc, i);
+
+                    const slide = document.createElement('div');
+                    slide.className = `slide ${i === 1 ? 'active' : ''}`;
+                    slide.id = `slide-${i}`;
+                    slide.innerHTML = doc.body ? doc.body.innerHTML : html;
+
+                    container.appendChild(slide);
+                    executeSlideScripts(doc, i, slide);
+                } catch (error) {
+                    console.error(`Error loading slide ${i}:`, error);
+                }
+            }
+
+            document.getElementById('total-slides').textContent = totalSlides;
+            updateNavState();
+            bindControls();
+            applyScale();
+        });
+
+        function bindControls() {
+            document.getElementById('prev-slide').addEventListener('click', prevSlide);
+            document.getElementById('next-slide').addEventListener('click', nextSlide);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                    nextSlide();
+                }
+            });
+
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+        }
+
+        function applyScale() {
+            const shell = document.getElementById('presentation-shell');
+            if (!shell) return;
+
+            const scale = Math.min(
+                window.innerWidth / FRAME_WIDTH,
+                window.innerHeight / FRAME_HEIGHT
+            );
+
+            shell.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('resize', applyScale);
+
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.slide');
+            if (index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+                document.getElementById('current-slide').textContent = currentSlide + 1;
+                updateNavState();
+            }
+        }
+
+        function nextSlide() {
+            showSlide(Math.min(currentSlide + 1, totalSlides - 1));
+        }
+
+        function prevSlide() {
+            showSlide(Math.max(currentSlide - 1, 0));
+        }
+
+        function updateNavState() {
+            const prevBtn = document.getElementById('prev-slide');
+            const nextBtn = document.getElementById('next-slide');
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function handleSwipe() {
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        function appendSlideStyles(doc, slideIndex) {
+            if (!doc || !doc.head) return;
+            const styles = doc.head.querySelectorAll('style');
+            styles.forEach((styleEl, styleIdx) => {
+                const marker = `slide-style-${slideIndex}-${styleIdx}`;
+                if (!document.head.querySelector(`style[data-slide-style="${marker}"]`)) {
+                    const injected = document.createElement('style');
+                    injected.dataset.slideStyle = marker;
+                    injected.textContent = styleEl.textContent;
+                    document.head.appendChild(injected);
+                }
+            });
+        }
+
+        function executeSlideScripts(doc, slideIndex, slideRoot) {
+            const scripts = doc.querySelectorAll('script');
+            scripts.forEach((scriptEl, scriptIdx) => {
+                const newScript = document.createElement('script');
+
+                if (scriptEl.src) {
+                    if (scriptEl.src.includes('chart.js')) {
+                        return;
+                    }
+                    if (document.querySelector(`script[data-slide-script-src="${scriptEl.src}"]`)) {
+                        return;
+                    }
+                    newScript.src = scriptEl.src;
+                    newScript.dataset.slideScriptSrc = scriptEl.src;
+                    document.body.appendChild(newScript);
+                } else {
+                    newScript.textContent = scriptEl.textContent;
+                    newScript.dataset.slideScript = `slide-${slideIndex}-${scriptIdx}`;
+                    (slideRoot || document.body).appendChild(newScript);
+                    setTimeout(() => newScript.remove(), 0);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
